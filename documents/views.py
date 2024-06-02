@@ -60,3 +60,13 @@ class DocumentViewSet(viewsets.ModelViewSet):
             return Response({'error': 'recipient_email is required'}, status=400)
 
 
+class DownloadViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Download.objects.all()
+    serializer_class = DownloadSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class EmailLogViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = EmailLog.objects.all()
+    serializer_class = EmailLogSerializer
+    permission_classes = [permissions.IsAuthenticated]
