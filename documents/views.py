@@ -29,3 +29,34 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
         response = FileResponse(document.file.open(), as_attachment=True, filename=document.file.name)
         return response
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def email(self, request, pk=None):
+        document = self.get_object()
+        recipient_email = request.data.get('recipient_email')
+        if recipient_email:
+            EmailLog.objects.create(document=document, user=request.user, recipient_email=recipient_email)
+
+            subject = 'Document from Our Service'
+            message = f'Please find the document {document.title} attached.'
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = [recipient_email]
+
+            # Create the email
+            email = EmailMessage(
+                subject,
+                message,
+                email_from,
+                recipient_list,
+            )
+            email.attach_file(document.file.path)
+
+            try:
+                email.send()
+                return Response({'status': 'document emailed'})
+            except Exception as e:
+                return Response({'error': str(e)}, status=500)
+        else:
+            return Response({'error': 'recipient_email is required'}, status=400)
+
+
