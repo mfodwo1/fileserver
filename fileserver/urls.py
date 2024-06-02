@@ -21,4 +21,7 @@ import documents
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('documents/', include('documents.urls')),
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.jwt')),
 ]
