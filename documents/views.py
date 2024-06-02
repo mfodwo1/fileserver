@@ -1,9 +1,15 @@
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 from django.core.mail import EmailMessage
 from django.http import FileResponse
 from django.conf import settings
+
+from .custompermissions import IsAdminOrReadOnly
+from .filters import DocumentFilterSet
 from .models import CustomUser, Document, Download, EmailLog
 from .serializers import CustomUserSerializer, DocumentSerializer, DownloadSerializer, EmailLogSerializer
 
@@ -11,13 +17,18 @@ from .serializers import CustomUserSerializer, DocumentSerializer, DownloadSeria
 class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsAdminUser]
 
 
 class DocumentViewSet(viewsets.ModelViewSet):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrReadOnly]
+
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filterset_class = DocumentFilterSet
+    search_fields = ['title']
+    ordering_fields = ['upload_date', 'title']
 
     def perform_create(self, serializer):
         serializer.save(uploaded_by=self.request.user)
