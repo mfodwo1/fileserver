@@ -21,7 +21,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class DocumentViewSet(viewsets.ModelViewSet):
-    queryset = Document.objects.all()
+    queryset = Document.objects.prefetch_related('download_set', 'emaillog_set').all()
     serializer_class = DocumentSerializer
     permission_classes = [IsAdminOrReadOnly]
 
@@ -74,10 +74,10 @@ class DocumentViewSet(viewsets.ModelViewSet):
 class DownloadViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Download.objects.all()
     serializer_class = DownloadSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
 
 class EmailLogViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = EmailLog.objects.all()
     serializer_class = EmailLogSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminUser]

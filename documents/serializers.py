@@ -14,9 +14,12 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class DocumentSerializer(serializers.ModelSerializer):
+    download_count = serializers.IntegerField(source='download_set.count', read_only=True)
+    email_count = serializers.IntegerField(source='emaillog_set.count', read_only=True)
+
     class Meta:
         model = Document
-        fields = ['id', 'title', 'file', 'upload_date', 'uploaded_by']
+        fields = ['id', 'title', 'file', 'upload_date', 'uploaded_by', 'download_count', 'email_count']
 
 
 class DownloadSerializer(serializers.ModelSerializer):
