@@ -9,6 +9,7 @@ mysqlclient = "*"
 djangorestframework = "*"
 djangorestframework-simplejwt = "*"
 djoser = "*"
+python-decouple = "*"
 
 [dev-packages]
 
